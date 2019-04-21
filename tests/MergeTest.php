@@ -32,16 +32,16 @@ class MergeTest extends TestCase
         $provider1
             ->expects($this->once())
             ->method('__invoke')
-            ->willReturn(Set::of('string', 'foo'));
+            ->willReturn(Set::of('string', 'foo', 'baz'));
         $provider2
             ->expects($this->once())
             ->method('__invoke')
-            ->willReturn(Set::of('string', 'bar'));
+            ->willReturn(Set::of('string', 'foo', 'bar'));
 
         $keys = $provide();
 
         $this->assertInstanceOf(SetInterface::class, $keys);
         $this->assertSame('string', (string) $keys->type());
-        $this->assertSame(['foo', 'bar'], $keys->toPrimitive());
+        $this->assertSame(['foo', 'baz', 'bar'], $keys->toPrimitive());
     }
 }
