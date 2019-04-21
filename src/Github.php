@@ -50,9 +50,11 @@ final class Github implements Provide
                 return !$key->empty();
             })
             ->reduce(
-                Set::of('string'),
+                Set::of(PublicKey::class),
                 static function(SetInterface $keys, Str $key): SetInterface {
-                    return $keys->add((string) $key);
+                    return $keys->add(
+                        new PublicKey((string) $key)
+                    );
                 }
             );
     }

@@ -6,6 +6,7 @@ namespace Tests\Innmind\SshKeyProvider;
 use Innmind\SshKeyProvider\{
     Local,
     Provide,
+    PublicKey,
 };
 use Innmind\Server\Control\Server\{
     Processes,
@@ -67,8 +68,9 @@ class LocalTest extends TestCase
         $keys = $provide();
 
         $this->assertInstanceOf(SetInterface::class, $keys);
-        $this->assertSame('string', (string) $keys->type());
-        $this->assertSame(['foo'], $keys->toPrimitive());
+        $this->assertSame(PublicKey::class, (string) $keys->type());
+        $this->assertCount(1, $keys);
+        $this->assertSame('foo', (string) $keys->current());
     }
 
     public function testGenerateNewKey()
@@ -133,7 +135,8 @@ class LocalTest extends TestCase
         $keys = $provide();
 
         $this->assertInstanceOf(SetInterface::class, $keys);
-        $this->assertSame('string', (string) $keys->type());
-        $this->assertSame(['foo'], $keys->toPrimitive());
+        $this->assertSame(PublicKey::class, (string) $keys->type());
+        $this->assertCount(1, $keys);
+        $this->assertSame('foo', (string) $keys->current());
     }
 }

@@ -6,6 +6,7 @@ namespace Tests\Innmind\SshKeyProvider;
 use Innmind\SshKeyProvider\{
     Cache,
     Provide,
+    PublicKey,
 };
 use Innmind\Immutable\{
     SetInterface,
@@ -33,13 +34,16 @@ class CacheTest extends TestCase
         $provider
             ->expects($this->once())
             ->method('__invoke')
-            ->willReturn(Set::of('string', 'bar'));
+            ->willReturn(Set::of(
+                PublicKey::class,
+                $bar = new PublicKey('bar')
+            ));
 
         $keys = $provide();
 
         $this->assertInstanceOf(SetInterface::class, $keys);
-        $this->assertSame('string', (string) $keys->type());
-        $this->assertSame(['bar'], $keys->toPrimitive());
+        $this->assertSame(PublicKey::class, (string) $keys->type());
+        $this->assertSame([$bar], $keys->toPrimitive());
         $this->assertSame($keys, $provide());
     }
 }

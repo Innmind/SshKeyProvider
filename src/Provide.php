@@ -8,7 +8,7 @@ use Innmind\Immutable\SetInterface;
 interface Provide
 {
     /**
-     * @return SetInterface<string>
+     * @return SetInterface<PublicKey>
      */
     public function __invoke(): SetInterface;
 }

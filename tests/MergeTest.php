@@ -6,6 +6,7 @@ namespace Tests\Innmind\SshKeyProvider;
 use Innmind\SshKeyProvider\{
     Merge,
     Provide,
+    PublicKey,
 };
 use Innmind\Immutable\{
     SetInterface,
@@ -32,16 +33,24 @@ class MergeTest extends TestCase
         $provider1
             ->expects($this->once())
             ->method('__invoke')
-            ->willReturn(Set::of('string', 'foo', 'baz'));
+            ->willReturn(Set::of(
+                PublicKey::class,
+                new PublicKey('foo'),
+                $baz = new PublicKey('baz')
+            ));
         $provider2
             ->expects($this->once())
             ->method('__invoke')
-            ->willReturn(Set::of('string', 'foo', 'bar'));
+            ->willReturn(Set::of(
+                PublicKey::class,
+                $foo = new PublicKey('foo'),
+                $bar = new PublicKey('bar')
+            ));
 
         $keys = $provide();
 
         $this->assertInstanceOf(SetInterface::class, $keys);
-        $this->assertSame('string', (string) $keys->type());
-        $this->assertSame(['foo', 'baz', 'bar'], $keys->toPrimitive());
+        $this->assertSame(PublicKey::class, (string) $keys->type());
+        $this->assertSame([$foo, $baz, $bar], $keys->toPrimitive());
     }
 }

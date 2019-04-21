@@ -6,6 +6,7 @@ namespace Tests\Innmind\SshKeyProvider;
 use Innmind\SshKeyProvider\{
     Github,
     Provide,
+    PublicKey,
 };
 use Innmind\HttpTransport\Transport;
 use Innmind\Http\Message\Response;
@@ -82,8 +83,11 @@ KEYS
                 $keys = $provide();
 
                 $this->assertInstanceOf(SetInterface::class, $keys);
-                $this->assertSame('string', (string) $keys->type());
-                $this->assertSame(['foo', 'bar'], $keys->toPrimitive());
+                $this->assertSame(PublicKey::class, (string) $keys->type());
+                $this->assertCount(2, $keys);
+                $this->assertSame('foo', (string) $keys->current());
+                $keys->next();
+                $this->assertSame('bar', (string) $keys->current());
             });
     }
 }

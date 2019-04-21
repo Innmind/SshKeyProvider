@@ -40,8 +40,8 @@ final class Local implements Provide
 
         if ($key->exitCode()->isSuccessful()) {
             return Set::of(
-                'string',
-                (string) $key->output()
+                PublicKey::class,
+                new PublicKey((string) $key->output())
             );
         }
 
