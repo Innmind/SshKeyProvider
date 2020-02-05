@@ -29,13 +29,13 @@ $provide = new Cache(
     new Merge(
         new Local(
             $os->control()->processes(),
-            new Path($_SERVER['USER'].'/.ssh')
+            Path::of($_SERVER['USER'].'/.ssh'),
         ),
         new Github(
             $os->remote()->http(),
-            'GithubUsername'
-        )
-    )
+            'GithubUsername',
+        ),
+    ),
 );
 
 $sshKeys = $provide();
