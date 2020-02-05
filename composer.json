@@ -15,10 +15,10 @@
         "issues": "http://github.com/Innmind/SshKeyProvider/issues"
     },
     "require": {
-        "php": "~7.2",
-        "innmind/immutable": "^2.13",
-        "innmind/http-transport": "^4.0",
-        "innmind/server-control": "^2.8"
+        "php": "~7.4",
+        "innmind/immutable": "~3.0",
+        "innmind/http-transport": "~5.0",
+        "innmind/server-control": "~3.0"
     },
     "autoload": {
         "psr-4": {
@@ -27,12 +27,12 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\Innmind\\SshKeyProvider\\": "tests/",
-            "Fixture\\Innmind\\SshKeyProvider\\": "fixtures/"
+            "Tests\\Innmind\\SshKeyProvider\\": "tests/"
         }
     },
     "require-dev": {
         "phpunit/phpunit": "~8.0",
-        "giorgiosironi/eris": "^0.11.0"
+        "giorgiosironi/eris": "^0.11.0",
+        "vimeo/psalm": "^3.8"
     }
 }

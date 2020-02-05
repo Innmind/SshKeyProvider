@@ -3,12 +3,13 @@ declare(strict_types = 1);
 
 namespace Innmind\SshKeyProvider;
 
-use Innmind\Immutable\SetInterface;
+use Innmind\Immutable\Set;
 
 final class Cache implements Provide
 {
-    private $provide;
-    private $keys;
+    private Provide $provide;
+    /** @var Set<PublicKey> */
+    private ?Set $keys = null;
 
     public function __construct(Provide $provide)
     {
@@ -18,8 +19,8 @@ final class Cache implements Provide
     /**
      * {@inheritdoc}
      */
-    public function __invoke(): SetInterface
+    public function __invoke(): Set
     {
-        return $this->keys ?? $this->keys = ($this->provide)();
+        return $this->keys ??= ($this->provide)();
     }
 }

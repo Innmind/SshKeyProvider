@@ -3,16 +3,12 @@ declare(strict_types = 1);
 
 namespace Innmind\SshKeyProvider;
 
-use Innmind\Immutable\{
-    SetInterface,
-    Set,
-    MapInterface,
-    Map,
-};
+use Innmind\Immutable\Set;
 
 final class Merge implements Provide
 {
-    private $providers;
+    /** @var list<Provide> */
+    private array $providers;
 
     public function __construct(Provide ...$providers)
     {
@@ -22,27 +18,27 @@ final class Merge implements Provide
     /**
      * {@inheritdoc}
      */
-    public function __invoke(): SetInterface
+    public function __invoke(): Set
     {
+        /** @var Set<PublicKey> */
         $keys = Set::of(PublicKey::class);
 
         foreach ($this->providers as $provide) {
             $keys = $keys->merge($provide());
         }
 
-        return Set::of(
-            PublicKey::class,
-            ...$keys
-                ->reduce( // deduplicate the keys since not done automatically due to objects
-                    Map::of('string', PublicKey::class),
-                    static function(MapInterface $keys, PublicKey $key): MapInterface {
-                        return $keys->put(
-                            (string) $key,
-                            $key
-                        );
-                    }
-                )
-                ->values()
-        );
+        /** @var Set<PublicKey> */
+        return $keys
+            ->toMapOf(
+                'string',
+                PublicKey::class,
+                static function(PublicKey $key): \Generator {
+                    yield $key->toString() => $key; // key de-duplication
+                },
+            )
+            ->toSetOf(
+                PublicKey::class,
+                static fn(string $_, PublicKey $key): \Generator => yield $key,
+            );
     }
 }

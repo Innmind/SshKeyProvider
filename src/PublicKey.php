@@ -8,7 +8,7 @@ use Innmind\Immutable\Str;
 
 final class PublicKey
 {
-    private $value;
+    private string $value;
 
     public function __construct(string $value)
     {
@@ -18,10 +18,10 @@ final class PublicKey
             throw new DomainException;
         }
 
-        $this->value = (string) $value;
+        $this->value = $value->toString();
     }
 
-    public function __toString(): string
+    public function toString(): string
     {
         return $this->value;
     }

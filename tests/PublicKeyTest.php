@@ -25,7 +25,7 @@ class PublicKeyTest extends TestCase
                 return $value !== '';
             })
             ->then(function(string $value): void {
-                $this->assertSame($value, (string) new PublicKey($value));
+                $this->assertSame($value, (new PublicKey($value))->toString());
             });
     }
 
@@ -37,7 +37,7 @@ class PublicKeyTest extends TestCase
                 return $value !== '';
             })
             ->then(function(string $value): void {
-                $this->assertSame($value, (string) new PublicKey("\n".$value."\n"));
+                $this->assertSame($value, (new PublicKey("\n".$value."\n"))->toString());
             });
     }
 

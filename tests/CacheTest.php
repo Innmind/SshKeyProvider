@@ -8,10 +8,8 @@ use Innmind\SshKeyProvider\{
     Provide,
     PublicKey,
 };
-use Innmind\Immutable\{
-    SetInterface,
-    Set,
-};
+use Innmind\Immutable\Set;
+use function Innmind\Immutable\unwrap;
 use PHPUnit\Framework\TestCase;
 
 class CacheTest extends TestCase
@@ -41,9 +39,9 @@ class CacheTest extends TestCase
 
         $keys = $provide();
 
-        $this->assertInstanceOf(SetInterface::class, $keys);
+        $this->assertInstanceOf(Set::class, $keys);
         $this->assertSame(PublicKey::class, (string) $keys->type());
-        $this->assertSame([$bar], $keys->toPrimitive());
+        $this->assertSame([$bar], unwrap($keys));
         $this->assertSame($keys, $provide());
     }
 }

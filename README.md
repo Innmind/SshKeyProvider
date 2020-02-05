@@ -1,10 +1,8 @@
 # Ssh key provider
 
-| `develop` |
-|-----------|
-| [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/Innmind/SshKeyProvider/badges/quality-score.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/SshKeyProvider/?branch=develop) |
-| [![Code Coverage](https://scrutinizer-ci.com/g/Innmind/SshKeyProvider/badges/coverage.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/SshKeyProvider/?branch=develop) |
-| [![Build Status](https://scrutinizer-ci.com/g/Innmind/SshKeyProvider/badges/build.png?b=develop)](https://scrutinizer-ci.com/g/Innmind/SshKeyProvider/build-status/develop) |
+[![Build Status](https://github.com/Innmind/SshKeyProvider/workflows/CI/badge.svg)](https://github.com/Innmind/SshKeyProvider/actions?query=workflow%3ACI)
+[![codecov](https://codecov.io/gh/Innmind/SshKeyProvider/branch/develop/graph/badge.svg)](https://codecov.io/gh/Innmind/SshKeyProvider)
+[![Type Coverage](https://shepherd.dev/github/Innmind/SshKeyProvider/coverage.svg)](https://shepherd.dev/github/Innmind/SshKeyProvider)
 
 Small library to retrieve all public keys from different locations.
 
@@ -31,13 +29,13 @@ $provide = new Cache(
     new Merge(
         new Local(
             $os->control()->processes(),
-            new Path($_SERVER['USER'].'/.ssh')
+            Path::of($_SERVER['USER'].'/.ssh'),
         ),
         new Github(
             $os->remote()->http(),
-            'GithubUsername'
-        )
-    )
+            'GithubUsername',
+        ),
+    ),
 );
 
 $sshKeys = $provide();
