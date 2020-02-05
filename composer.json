@@ -27,8 +27,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\Innmind\\SshKeyProvider\\": "tests/",
-            "Fixture\\Innmind\\SshKeyProvider\\": "fixtures/"
+            "Tests\\Innmind\\SshKeyProvider\\": "tests/"
         }
     },
     "require-dev": {
