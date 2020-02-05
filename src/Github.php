@@ -41,6 +41,7 @@ final class Github implements Provide
             new ProtocolVersion(2, 0),
         ));
 
+        /** @var Set<PublicKey> */
         return $response
             ->body()
             ->read()

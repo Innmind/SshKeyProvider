@@ -8,7 +8,8 @@ use Innmind\Immutable\Set;
 final class Cache implements Provide
 {
     private Provide $provide;
-    private Set $keys;
+    /** @var Set<PublicKey> */
+    private ?Set $keys = null;
 
     public function __construct(Provide $provide)
     {
@@ -20,6 +21,6 @@ final class Cache implements Provide
      */
     public function __invoke(): Set
     {
-        return $this->keys ?? $this->keys = ($this->provide)();
+        return $this->keys ??= ($this->provide)();
     }
 }
