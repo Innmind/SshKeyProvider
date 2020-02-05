@@ -67,7 +67,7 @@ class LocalTest extends TestCase
         $this->assertInstanceOf(Set::class, $keys);
         $this->assertSame(PublicKey::class, (string) $keys->type());
         $this->assertCount(1, $keys);
-        $this->assertSame('foo', (string) first($keys));
+        $this->assertSame('foo', first($keys)->toString());
     }
 
     public function testGenerateNewKey()
@@ -133,6 +133,6 @@ class LocalTest extends TestCase
         $this->assertInstanceOf(Set::class, $keys);
         $this->assertSame(PublicKey::class, (string) $keys->type());
         $this->assertCount(1, $keys);
-        $this->assertSame('foo', (string) first($keys));
+        $this->assertSame('foo', first($keys)->toString());
     }
 }

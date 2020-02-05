@@ -30,7 +30,7 @@ final class Merge implements Provide
                 'string',
                 PublicKey::class,
                 static function(PublicKey $key): \Generator {
-                    yield (string) $key => $key; // key de-duplication
+                    yield $key->toString() => $key; // key de-duplication
                 },
             )
             ->toSetOf(

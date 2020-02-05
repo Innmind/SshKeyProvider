@@ -87,9 +87,9 @@ KEYS
                 $this->assertSame(PublicKey::class, (string) $keys->type());
                 $this->assertCount(2, $keys);
                 $keys = unwrap($keys);
-                $this->assertSame('foo', (string) \current($keys));
+                $this->assertSame('foo', \current($keys)->toString());
                 \next($keys);
-                $this->assertSame('bar', (string) \current($keys));
+                $this->assertSame('bar', \current($keys)->toString());
             });
     }
 }
