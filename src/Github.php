@@ -38,23 +38,17 @@ final class Github implements Provide
         $response = ($this->fulfill)(new Request(
             Url::of("https://github.com/{$this->name}.keys"),
             Method::get(),
-            new ProtocolVersion(2, 0)
+            new ProtocolVersion(2, 0),
         ));
 
         return $response
             ->body()
             ->read()
             ->split("\n")
-            ->filter(static function(Str $key): bool {
-                return !$key->empty();
-            })
-            ->reduce(
-                Set::of(PublicKey::class),
-                static function(Set $keys, Str $key): Set {
-                    return $keys->add(
-                        new PublicKey($key->toString())
-                    );
-                }
+            ->filter(static fn(Str $key): bool => !$key->empty())
+            ->toSetOf(
+                PublicKey::class,
+                static fn(Str $key): \Generator => yield new PublicKey($key->toString()),
             );
     }
 }

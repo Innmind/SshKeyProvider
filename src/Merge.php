@@ -3,10 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\SshKeyProvider;
 
-use Innmind\Immutable\{
-    Set,
-    Map,
-};
+use Innmind\Immutable\Set;
 
 final class Merge implements Provide
 {

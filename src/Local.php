@@ -52,7 +52,7 @@ final class Local implements Provide
                     ->withArgument('id_rsa')
                     ->withShortOption('N')
                     ->withArgument('')
-                    ->withWorkingDirectory($this->sshFolder)
+                    ->withWorkingDirectory($this->sshFolder),
             )
             ->wait();
 
