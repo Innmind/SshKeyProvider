@@ -15,8 +15,8 @@ use Innmind\Immutable\{
 
 final class Local implements Provide
 {
-    private $processes;
-    private $sshFolder;
+    private Processes $processes;
+    private PathInterface $sshFolder;
 
     public function __construct(Processes $processes, PathInterface $sshFolder)
     {

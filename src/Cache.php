@@ -7,8 +7,8 @@ use Innmind\Immutable\SetInterface;
 
 final class Cache implements Provide
 {
-    private $provide;
-    private $keys;
+    private Provide $provide;
+    private SetInterface $keys;
 
     public function __construct(Provide $provide)
     {

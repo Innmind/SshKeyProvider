@@ -12,7 +12,7 @@ use Innmind\Immutable\{
 
 final class Merge implements Provide
 {
-    private $providers;
+    private array $providers;
 
     public function __construct(Provide ...$providers)
     {

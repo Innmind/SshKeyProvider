@@ -18,8 +18,8 @@ use Innmind\Immutable\{
 
 final class Github implements Provide
 {
-    private $fulfill;
-    private $name;
+    private Transport $fulfill;
+    private string $name;
 
     public function __construct(Transport $fulfill, string $name)
     {
