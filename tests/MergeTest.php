@@ -8,10 +8,8 @@ use Innmind\SshKeyProvider\{
     Provide,
     PublicKey,
 };
-use Innmind\Immutable\{
-    SetInterface,
-    Set,
-};
+use Innmind\Immutable\Set;
+use function Innmind\Immutable\unwrap;
 use PHPUnit\Framework\TestCase;
 
 class MergeTest extends TestCase
@@ -49,8 +47,8 @@ class MergeTest extends TestCase
 
         $keys = $provide();
 
-        $this->assertInstanceOf(SetInterface::class, $keys);
+        $this->assertInstanceOf(Set::class, $keys);
         $this->assertSame(PublicKey::class, (string) $keys->type());
-        $this->assertSame([$foo, $baz, $bar], $keys->toPrimitive());
+        $this->assertSame([$foo, $baz, $bar], unwrap($keys));
     }
 }

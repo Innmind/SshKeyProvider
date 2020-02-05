@@ -4,9 +4,7 @@ declare(strict_types = 1);
 namespace Innmind\SshKeyProvider;
 
 use Innmind\Immutable\{
-    SetInterface,
     Set,
-    MapInterface,
     Map,
 };
 
@@ -22,7 +20,7 @@ final class Merge implements Provide
     /**
      * {@inheritdoc}
      */
-    public function __invoke(): SetInterface
+    public function __invoke(): Set
     {
         $keys = Set::of(PublicKey::class);
 
@@ -30,19 +28,17 @@ final class Merge implements Provide
             $keys = $keys->merge($provide());
         }
 
-        return Set::of(
-            PublicKey::class,
-            ...$keys
-                ->reduce( // deduplicate the keys since not done automatically due to objects
-                    Map::of('string', PublicKey::class),
-                    static function(MapInterface $keys, PublicKey $key): MapInterface {
-                        return $keys->put(
-                            (string) $key,
-                            $key
-                        );
-                    }
-                )
-                ->values()
-        );
+        return $keys
+            ->toMapOf(
+                'string',
+                PublicKey::class,
+                static function(PublicKey $key): \Generator {
+                    yield (string) $key => $key; // key de-duplication
+                },
+            )
+            ->toSetOf(
+                PublicKey::class,
+                static fn(string $_, PublicKey $key): \Generator => yield $key,
+            );
     }
 }

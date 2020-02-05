@@ -6,12 +6,11 @@ namespace Innmind\SshKeyProvider;
 use Innmind\HttpTransport\Transport;
 use Innmind\Http\{
     Message\Request\Request,
-    Message\Method\Method,
-    ProtocolVersion\ProtocolVersion,
+    Message\Method,
+    ProtocolVersion,
 };
 use Innmind\Url\Url;
 use Innmind\Immutable\{
-    SetInterface,
     Set,
     Str,
 };
@@ -34,10 +33,10 @@ final class Github implements Provide
     /**
      * {@inheritdoc}
      */
-    public function __invoke(): SetInterface
+    public function __invoke(): Set
     {
         $response = ($this->fulfill)(new Request(
-            Url::fromString("https://github.com/{$this->name}.keys"),
+            Url::of("https://github.com/{$this->name}.keys"),
             Method::get(),
             new ProtocolVersion(2, 0)
         ));
@@ -51,9 +50,9 @@ final class Github implements Provide
             })
             ->reduce(
                 Set::of(PublicKey::class),
-                static function(SetInterface $keys, Str $key): SetInterface {
+                static function(Set $keys, Str $key): Set {
                     return $keys->add(
-                        new PublicKey((string) $key)
+                        new PublicKey($key->toString())
                     );
                 }
             );

@@ -3,12 +3,12 @@ declare(strict_types = 1);
 
 namespace Innmind\SshKeyProvider;
 
-use Innmind\Immutable\SetInterface;
+use Innmind\Immutable\Set;
 
 interface Provide
 {
     /**
-     * @return SetInterface<PublicKey>
+     * @return Set<PublicKey>
      */
-    public function __invoke(): SetInterface;
+    public function __invoke(): Set;
 }

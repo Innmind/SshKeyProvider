@@ -18,7 +18,7 @@ final class PublicKey
             throw new DomainException;
         }
 
-        $this->value = (string) $value;
+        $this->value = $value->toString();
     }
 
     public function __toString(): string

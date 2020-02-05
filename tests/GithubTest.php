@@ -12,9 +12,10 @@ use Innmind\HttpTransport\Transport;
 use Innmind\Http\Message\Response;
 use Innmind\Stream\Readable;
 use Innmind\Immutable\{
-    SetInterface,
+    Set,
     Str,
 };
+use function Innmind\Immutable\unwrap;
 use PHPUnit\Framework\TestCase;
 use Eris\{
     Generator,
@@ -62,8 +63,8 @@ class GithubTest extends TestCase
                     ->expects($this->once())
                     ->method('__invoke')
                     ->with($this->callback(static function($request) use ($user): bool {
-                        return (string) $request->url() === "https://github.com/$user.keys" &&
-                            (string) $request->method() === 'GET';
+                        return $request->url()->toString() === "https://github.com/$user.keys" &&
+                            $request->method()->toString() === 'GET';
                     }))
                     ->willReturn($response = $this->createMock(Response::class));
                 $response
@@ -82,12 +83,13 @@ KEYS
 
                 $keys = $provide();
 
-                $this->assertInstanceOf(SetInterface::class, $keys);
+                $this->assertInstanceOf(Set::class, $keys);
                 $this->assertSame(PublicKey::class, (string) $keys->type());
                 $this->assertCount(2, $keys);
-                $this->assertSame('foo', (string) $keys->current());
-                $keys->next();
-                $this->assertSame('bar', (string) $keys->current());
+                $keys = unwrap($keys);
+                $this->assertSame('foo', (string) \current($keys));
+                \next($keys);
+                $this->assertSame('bar', (string) \current($keys));
             });
     }
 }

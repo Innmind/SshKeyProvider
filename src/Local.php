@@ -7,18 +7,15 @@ use Innmind\Server\Control\Server\{
     Processes,
     Command,
 };
-use Innmind\Url\PathInterface;
-use Innmind\Immutable\{
-    SetInterface,
-    Set,
-};
+use Innmind\Url\Path;
+use Innmind\Immutable\Set;
 
 final class Local implements Provide
 {
     private Processes $processes;
-    private PathInterface $sshFolder;
+    private Path $sshFolder;
 
-    public function __construct(Processes $processes, PathInterface $sshFolder)
+    public function __construct(Processes $processes, Path $sshFolder)
     {
         $this->processes = $processes;
         $this->sshFolder = $sshFolder;
@@ -27,21 +24,21 @@ final class Local implements Provide
     /**
      * {@inheritdoc}
      */
-    public function __invoke(): SetInterface
+    public function __invoke(): Set
     {
         $key = $this
             ->processes
             ->execute(
                 Command::foreground('cat')
                     ->withArgument('id_rsa.pub')
-                    ->withWorkingDirectory((string) $this->sshFolder)
-            )
-            ->wait();
+                    ->withWorkingDirectory($this->sshFolder),
+            );
+        $key->wait();
 
         if ($key->exitCode()->isSuccessful()) {
             return Set::of(
                 PublicKey::class,
-                new PublicKey((string) $key->output())
+                new PublicKey($key->output()->toString()),
             );
         }
 
@@ -55,7 +52,7 @@ final class Local implements Provide
                     ->withArgument('id_rsa')
                     ->withShortOption('N')
                     ->withArgument('')
-                    ->withWorkingDirectory((string) $this->sshFolder)
+                    ->withWorkingDirectory($this->sshFolder)
             )
             ->wait();
 
