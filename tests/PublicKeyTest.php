@@ -8,22 +8,19 @@ use Innmind\SshKeyProvider\{
     Exception\DomainException,
 };
 use PHPUnit\Framework\TestCase;
-use Eris\{
-    Generator,
-    TestTrait,
+use Innmind\BlackBox\{
+    PHPUnit\BlackBox,
+    Set,
 };
 
 class PublicKeyTest extends TestCase
 {
-    use TestTrait;
+    use BlackBox;
 
     public function testInterface()
     {
         $this
-            ->forAll(Generator\string())
-            ->when(static function(string $value): bool {
-                return $value !== '';
-            })
+            ->forAll(Set\Unicode::lengthBetween(1, 100))
             ->then(function(string $value): void {
                 $this->assertSame($value, (new PublicKey($value))->toString());
             });
@@ -32,10 +29,7 @@ class PublicKeyTest extends TestCase
     public function testTrim()
     {
         $this
-            ->forAll(Generator\string())
-            ->when(static function(string $value): bool {
-                return $value !== '';
-            })
+            ->forAll(Set\Unicode::lengthBetween(1, 128))
             ->then(function(string $value): void {
                 $this->assertSame($value, (new PublicKey("\n".$value."\n"))->toString());
             });

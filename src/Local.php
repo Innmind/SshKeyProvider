@@ -21,9 +21,6 @@ final class Local implements Provide
         $this->sshFolder = $sshFolder;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __invoke(): Set
     {
         $key = $this
@@ -35,7 +32,7 @@ final class Local implements Provide
             );
         $key->wait();
 
-        if ($key->exitCode()->isSuccessful()) {
+        if ($key->exitCode()->successful()) {
             return Set::of(
                 PublicKey::class,
                 new PublicKey($key->output()->toString()),
