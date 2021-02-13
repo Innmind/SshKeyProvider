@@ -77,49 +77,47 @@ class LocalTest extends TestCase
             Path::of('/somewhere')
         );
         $processes
-            ->expects($this->at(0))
+            ->expects($this->exactly(3))
             ->method('execute')
-            ->with($this->callback(static function($command): bool {
-                return $command->toString() === "cat 'id_rsa.pub'" &&
-                    $command->workingDirectory()->toString() === '/somewhere';
-            }))
-            ->willReturn($process = $this->createMock(Process::class));
-        $process
+            ->withConsecutive(
+                [$this->callback(static function($command): bool {
+                    return $command->toString() === "cat 'id_rsa.pub'" &&
+                        $command->workingDirectory()->toString() === '/somewhere';
+                })],
+                [$this->callback(static function($command): bool {
+                    return $command->toString() === "ssh-keygen '-t' 'rsa' '-f' 'id_rsa' '-N' ''" &&
+                        $command->workingDirectory()->toString() === '/somewhere';
+                })],
+                [$this->callback(static function($command): bool {
+                    return $command->toString() === "cat 'id_rsa.pub'" &&
+                        $command->workingDirectory()->toString() === '/somewhere';
+                })],
+            )
+            ->will($this->onConsecutiveCalls(
+                $process1 = $this->createMock(Process::class),
+                $process2 = $this->createMock(Process::class),
+                $process3 = $this->createMock(Process::class),
+            ));
+        $process1
             ->expects($this->once())
             ->method('wait');
-        $process
+        $process1
             ->expects($this->once())
             ->method('exitCode')
             ->willReturn(new ExitCode(1));
-        $processes
-            ->expects($this->at(1))
-            ->method('execute')
-            ->with($this->callback(static function($command): bool {
-                return $command->toString() === "ssh-keygen '-t' 'rsa' '-f' 'id_rsa' '-N' ''" &&
-                    $command->workingDirectory()->toString() === '/somewhere';
-            }))
-            ->willReturn($process = $this->createMock(Process::class));
-        $process
+        $process2
             ->expects($this->once())
             ->method('wait')
             ->will($this->returnSelf());
-        $processes
-            ->expects($this->at(2))
-            ->method('execute')
-            ->with($this->callback(static function($command): bool {
-                return $command->toString() === "cat 'id_rsa.pub'" &&
-                    $command->workingDirectory()->toString() === '/somewhere';
-            }))
-            ->willReturn($process = $this->createMock(Process::class));
-        $process
+        $process3
             ->expects($this->once())
             ->method('wait')
             ->will($this->returnSelf());
-        $process
+        $process3
             ->expects($this->once())
             ->method('exitCode')
             ->willReturn(new ExitCode(0));
-        $process
+        $process3
             ->expects($this->once())
             ->method('output')
             ->willReturn($output = $this->createMock(Output::class));
