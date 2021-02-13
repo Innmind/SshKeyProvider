@@ -17,14 +17,14 @@ use Innmind\Immutable\{
 };
 use function Innmind\Immutable\unwrap;
 use PHPUnit\Framework\TestCase;
-use Eris\{
-    Generator,
-    TestTrait,
+use Innmind\BlackBox\{
+    PHPUnit\BlackBox,
+    Set as DataSet,
 };
 
 class GithubTest extends TestCase
 {
-    use TestTrait;
+    use BlackBox;
 
     public function testInterface()
     {
@@ -50,10 +50,16 @@ class GithubTest extends TestCase
     public function testInvokation()
     {
         $this
-            ->forAll(Generator\string())
-            ->when(static function(string $user): bool {
-                return $user !== '';
-            })
+            ->forAll(DataSet\Decorate::immutable(
+                static fn($chars) => \implode('', $chars),
+                DataSet\Sequence::of(
+                    DataSet\Decorate::immutable(
+                        static fn($ord) => \chr($ord),
+                        DataSet\Integers::between(33, 126),
+                    ),
+                    DataSet\Integers::between(1, 50),
+                ),
+            ))
             ->then(function(string $user): void {
                 $provide = new Github(
                     $http = $this->createMock(Transport::class),
