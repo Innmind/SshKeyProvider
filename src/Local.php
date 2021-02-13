@@ -35,7 +35,7 @@ final class Local implements Provide
             );
         $key->wait();
 
-        if ($key->exitCode()->isSuccessful()) {
+        if ($key->exitCode()->successful()) {
             return Set::of(
                 PublicKey::class,
                 new PublicKey($key->output()->toString()),
