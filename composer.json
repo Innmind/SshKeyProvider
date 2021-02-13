@@ -15,7 +15,7 @@
         "issues": "http://github.com/Innmind/SshKeyProvider/issues"
     },
     "require": {
-        "php": "~7.4",
+        "php": "~7.4|~8.0",
         "innmind/immutable": "~3.0",
         "innmind/http-transport": "~5.0",
         "innmind/server-control": "~3.0"
