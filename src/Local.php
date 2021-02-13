@@ -21,9 +21,6 @@ final class Local implements Provide
         $this->sshFolder = $sshFolder;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __invoke(): Set
     {
         $key = $this

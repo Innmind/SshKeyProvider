@@ -30,9 +30,6 @@ final class Github implements Provide
         $this->name = $name;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __invoke(): Set
     {
         $response = ($this->fulfill)(new Request(

@@ -16,9 +16,6 @@ final class Cache implements Provide
         $this->provide = $provide;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __invoke(): Set
     {
         return $this->keys ??= ($this->provide)();

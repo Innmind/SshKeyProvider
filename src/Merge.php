@@ -15,9 +15,6 @@ final class Merge implements Provide
         $this->providers = $providers;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function __invoke(): Set
     {
         /** @var Set<PublicKey> */
