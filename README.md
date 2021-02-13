@@ -1,6 +1,6 @@
 # Ssh key provider
 
-[![Build Status](https://github.com/Innmind/SshKeyProvider/workflows/CI/badge.svg)](https://github.com/Innmind/SshKeyProvider/actions?query=workflow%3ACI)
+[![Build Status](https://github.com/Innmind/SshKeyProvider/workflows/CI/badge.svg?branch=master)](https://github.com/Innmind/SshKeyProvider/actions?query=workflow%3ACI)
 [![codecov](https://codecov.io/gh/Innmind/SshKeyProvider/branch/develop/graph/badge.svg)](https://codecov.io/gh/Innmind/SshKeyProvider)
 [![Type Coverage](https://shepherd.dev/github/Innmind/SshKeyProvider/coverage.svg)](https://shepherd.dev/github/Innmind/SshKeyProvider)
 
