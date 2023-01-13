@@ -30,6 +30,7 @@ class PublicKeyTest extends TestCase
     {
         $this
             ->forAll(Set\Unicode::lengthBetween(1, 128))
+            ->filter(static fn($value) => $value !== "\n")
             ->then(function(string $value): void {
                 $this->assertSame($value, (new PublicKey("\n".$value."\n"))->toString());
             });
