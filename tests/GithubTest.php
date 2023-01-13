@@ -32,8 +32,8 @@ class GithubTest extends TestCase
             Provide::class,
             new Github(
                 $this->createMock(Transport::class),
-                'foo'
-            )
+                'foo',
+            ),
         );
     }
 
@@ -43,7 +43,7 @@ class GithubTest extends TestCase
 
         new Github(
             $this->createMock(Transport::class),
-            ''
+            '',
         );
     }
 
@@ -54,7 +54,7 @@ class GithubTest extends TestCase
             ->then(function(string $user): void {
                 $provide = new Github(
                     $http = $this->createMock(Transport::class),
-                    $user
+                    $user,
                 );
                 $http
                     ->expects($this->once())

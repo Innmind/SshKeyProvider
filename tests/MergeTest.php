@@ -18,7 +18,7 @@ class MergeTest extends TestCase
     {
         $this->assertInstanceOf(
             Provide::class,
-            new Merge
+            new Merge,
         );
     }
 
@@ -26,7 +26,7 @@ class MergeTest extends TestCase
     {
         $provide = new Merge(
             $provider1 = $this->createMock(Provide::class),
-            $provider2 = $this->createMock(Provide::class)
+            $provider2 = $this->createMock(Provide::class),
         );
         $provider1
             ->expects($this->once())
@@ -34,7 +34,7 @@ class MergeTest extends TestCase
             ->willReturn(Set::of(
                 PublicKey::class,
                 new PublicKey('foo'),
-                $baz = new PublicKey('baz')
+                $baz = new PublicKey('baz'),
             ));
         $provider2
             ->expects($this->once())
@@ -42,7 +42,7 @@ class MergeTest extends TestCase
             ->willReturn(Set::of(
                 PublicKey::class,
                 $foo = new PublicKey('foo'),
-                $bar = new PublicKey('bar')
+                $bar = new PublicKey('bar'),
             ));
 
         $keys = $provide();

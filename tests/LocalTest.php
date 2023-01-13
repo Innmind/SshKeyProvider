@@ -36,7 +36,7 @@ class LocalTest extends TestCase
     {
         $provide = new Local(
             $processes = $this->createMock(Processes::class),
-            Path::of('/somewhere')
+            Path::of('/somewhere'),
         );
         $processes
             ->expects($this->once())
@@ -74,7 +74,7 @@ class LocalTest extends TestCase
     {
         $provide = new Local(
             $processes = $this->createMock(Processes::class),
-            Path::of('/somewhere')
+            Path::of('/somewhere'),
         );
         $processes
             ->expects($this->exactly(3))

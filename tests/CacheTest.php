@@ -19,22 +19,22 @@ class CacheTest extends TestCase
         $this->assertInstanceOf(
             Provide::class,
             new Cache(
-                $this->createMock(Provide::class)
-            )
+                $this->createMock(Provide::class),
+            ),
         );
     }
 
     public function testCache()
     {
         $provide = new Cache(
-            $provider = $this->createMock(Provide::class)
+            $provider = $this->createMock(Provide::class),
         );
         $provider
             ->expects($this->once())
             ->method('__invoke')
             ->willReturn(Set::of(
                 PublicKey::class,
-                $bar = new PublicKey('bar')
+                $bar = new PublicKey('bar'),
             ));
 
         $keys = $provide();
