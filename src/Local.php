@@ -39,20 +39,6 @@ final class Local implements Provide
             );
         }
 
-        $this
-            ->processes
-            ->execute(
-                Command::foreground('ssh-keygen')
-                    ->withShortOption('t')
-                    ->withArgument('rsa')
-                    ->withShortOption('f')
-                    ->withArgument('id_rsa')
-                    ->withShortOption('N')
-                    ->withArgument('')
-                    ->withWorkingDirectory($this->sshFolder),
-            )
-            ->wait();
-
-        return $this();
+        return Set::of(PublicKey::class);
     }
 }
