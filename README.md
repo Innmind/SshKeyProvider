@@ -25,13 +25,12 @@ use Innmind\SshKeyProvider\{
 use Innmind\Url\Path;
 
 $os = Factory::build();
-$provide = new Cache(
-    new Merge(
-        new Local(
-            $os->control()->processes(),
-            Path::of($_SERVER['USER'].'/.ssh'),
+$provide = Cache::of(
+    Merge::of(
+        Local::of(
+            $os->filesystem()->mount(Path::of($_SERVER['USER'].'/.ssh/')),
         ),
-        new Github(
+        Github::of(
             $os->remote()->http(),
             'GithubUsername',
         ),
@@ -42,5 +41,3 @@ $sshKeys = $provide();
 ```
 
 This example will retrieve all keys define in the `GithubUsername` account and the key `id_rsa.pub` on the local machine.
-
-**Important**: when no `id_rsa.pub` file found `Local` will generate a new one.
