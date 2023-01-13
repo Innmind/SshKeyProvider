@@ -32,21 +32,22 @@ final class Github implements Provide
 
     public function __invoke(): Set
     {
-        $response = ($this->fulfill)(new Request(
+        return ($this->fulfill)(new Request(
             Url::of("https://github.com/{$this->name}.keys"),
-            Method::get(),
-            new ProtocolVersion(2, 0),
-        ));
-
-        /** @var Set<PublicKey> */
-        return $response
-            ->body()
-            ->read()
-            ->split("\n")
-            ->filter(static fn(Str $key): bool => !$key->empty())
-            ->toSetOf(
-                PublicKey::class,
-                static fn(Str $key): \Generator => yield new PublicKey($key->toString()),
+            Method::get,
+            ProtocolVersion::v20,
+        ))
+            ->map(static fn($success) => $success->response())
+            ->map(
+                static fn($response) => $response
+                    ->body()
+                    ->lines()
+                    ->filter(static fn($line) => !$line->str()->empty())
+                    ->map(static fn($line) => new PublicKey($line->toString())),
+            )
+            ->match(
+                static fn($keys) => Set::of(...$keys->toList()),
+                static fn() => Set::of(),
             );
     }
 }

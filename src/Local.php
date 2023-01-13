@@ -30,15 +30,12 @@ final class Local implements Provide
                     ->withArgument('id_rsa.pub')
                     ->withWorkingDirectory($this->sshFolder),
             );
-        $key->wait();
 
-        if ($key->exitCode()->successful()) {
-            return Set::of(
-                PublicKey::class,
-                new PublicKey($key->output()->toString()),
+        return $key
+            ->wait()
+            ->match(
+                static fn() => Set::of(new PublicKey($key->output()->toString())),
+                static fn() => Set::of(),
             );
-        }
-
-        return Set::of(PublicKey::class);
     }
 }

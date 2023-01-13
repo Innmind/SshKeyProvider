@@ -13,10 +13,14 @@ use Innmind\Server\Control\Server\{
     Process,
     Process\ExitCode,
     Process\Output,
+    Process\Failed,
 };
 use Innmind\Url\Path;
-use Innmind\Immutable\Set;
-use function Innmind\Immutable\first;
+use Innmind\Immutable\{
+    Set,
+    Either,
+    SideEffect,
+};
 use PHPUnit\Framework\TestCase;
 
 class LocalTest extends TestCase
@@ -43,16 +47,16 @@ class LocalTest extends TestCase
             ->method('execute')
             ->with($this->callback(static function($command): bool {
                 return $command->toString() === "cat 'id_rsa.pub'" &&
-                    $command->workingDirectory()->toString() === '/somewhere';
+                    '/somewhere' === $command->workingDirectory()->match(
+                        static fn($directory) => $directory->toString(),
+                        static fn() => null,
+                    );
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
+            ->method('wait')
+            ->willReturn(Either::right(new SideEffect));
         $process
             ->expects($this->once())
             ->method('output')
@@ -65,9 +69,8 @@ class LocalTest extends TestCase
         $keys = $provide();
 
         $this->assertInstanceOf(Set::class, $keys);
-        $this->assertSame(PublicKey::class, (string) $keys->type());
         $this->assertCount(1, $keys);
-        $this->assertSame('foo', first($keys)->toString());
+        $this->assertSame('foo', $keys->toList()[0]->toString());
     }
 
     public function testReturnNothingWhenNoLocalKey()
@@ -81,21 +84,20 @@ class LocalTest extends TestCase
             ->method('execute')
             ->with($this->callback(static function($command): bool {
                 return $command->toString() === "cat 'id_rsa.pub'" &&
-                    $command->workingDirectory()->toString() === '/somewhere';
+                    '/somewhere' === $command->workingDirectory()->match(
+                        static fn($directory) => $directory->toString(),
+                        static fn() => null,
+                    );
             }))
             ->willReturn($process = $this->createMock(Process::class));
         $process
             ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
+            ->method('wait')
+            ->willReturn(Either::left(new Failed(new ExitCode(1))));
 
         $keys = $provide();
 
         $this->assertInstanceOf(Set::class, $keys);
-        $this->assertSame(PublicKey::class, (string) $keys->type());
         $this->assertCount(0, $keys);
     }
 }

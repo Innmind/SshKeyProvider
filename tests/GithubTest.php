@@ -8,14 +8,20 @@ use Innmind\SshKeyProvider\{
     Provide,
     PublicKey,
 };
-use Innmind\HttpTransport\Transport;
-use Innmind\Http\Message\Response;
-use Innmind\Stream\Readable;
+use Innmind\HttpTransport\{
+    Transport,
+    Success,
+};
+use Innmind\Http\Message\{
+    Response,
+    Request,
+    StatusCode,
+};
+use Innmind\Filesystem\File\Content;
 use Innmind\Immutable\{
     Set,
-    Str,
+    Either,
 };
-use function Innmind\Immutable\unwrap;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
@@ -56,6 +62,11 @@ class GithubTest extends TestCase
                     $http = $this->createMock(Transport::class),
                     $user,
                 );
+                $response = $this->createMock(Response::class);
+                $response
+                    ->expects($this->once())
+                    ->method('statusCode')
+                    ->willReturn(StatusCode::ok);
                 $http
                     ->expects($this->once())
                     ->method('__invoke')
@@ -63,27 +74,24 @@ class GithubTest extends TestCase
                         return $request->url()->toString() === "https://github.com/$user.keys" &&
                             $request->method()->toString() === 'GET';
                     }))
-                    ->willReturn($response = $this->createMock(Response::class));
+                    ->willReturn(Either::right(new Success(
+                        $this->createMock(Request::class),
+                        $response,
+                    )));
                 $response
                     ->expects($this->once())
                     ->method('body')
-                    ->willReturn($body = $this->createMock(Readable::class));
-                $body
-                    ->expects($this->once())
-                    ->method('read')
-                    ->willReturn(Str::of(<<<KEYS
-foo
-bar
+                    ->willReturn(Content\Lines::ofContent(<<<KEYS
+                    foo
+                    bar
 
-KEYS
-                    ));
+                    KEYS));
 
                 $keys = $provide();
 
                 $this->assertInstanceOf(Set::class, $keys);
-                $this->assertSame(PublicKey::class, (string) $keys->type());
                 $this->assertCount(2, $keys);
-                $keys = unwrap($keys);
+                $keys = $keys->toList();
                 $this->assertSame('foo', \current($keys)->toString());
                 \next($keys);
                 $this->assertSame('bar', \current($keys)->toString());

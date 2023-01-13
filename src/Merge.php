@@ -10,6 +10,9 @@ final class Merge implements Provide
     /** @var list<Provide> */
     private array $providers;
 
+    /**
+     * @no-named-arguments
+     */
     public function __construct(Provide ...$providers)
     {
         $this->providers = $providers;
@@ -18,7 +21,7 @@ final class Merge implements Provide
     public function __invoke(): Set
     {
         /** @var Set<PublicKey> */
-        $keys = Set::of(PublicKey::class);
+        $keys = Set::of();
 
         foreach ($this->providers as $provide) {
             $keys = $keys->merge($provide());
@@ -26,16 +29,7 @@ final class Merge implements Provide
 
         /** @var Set<PublicKey> */
         return $keys
-            ->toMapOf(
-                'string',
-                PublicKey::class,
-                static function(PublicKey $key): \Generator {
-                    yield $key->toString() => $key; // key de-duplication
-                },
-            )
-            ->toSetOf(
-                PublicKey::class,
-                static fn(string $_, PublicKey $key): \Generator => yield $key,
-            );
+            ->map(static fn($key) => $key->toString()) // key de-duplication
+            ->map(static fn($key) => new PublicKey($key));
     }
 }
