@@ -8,19 +8,12 @@ use Innmind\SshKeyProvider\{
     Provide,
     PublicKey,
 };
-use Innmind\Server\Control\Server\{
-    Processes,
-    Process,
-    Process\ExitCode,
-    Process\Output,
-    Process\Failed,
+use Innmind\Filesystem\{
+    Adapter\InMemory,
+    File\File,
+    File\Content,
 };
-use Innmind\Url\Path;
-use Innmind\Immutable\{
-    Set,
-    Either,
-    SideEffect,
-};
+use Innmind\Immutable\Set;
 use PHPUnit\Framework\TestCase;
 
 class LocalTest extends TestCase
@@ -29,42 +22,16 @@ class LocalTest extends TestCase
     {
         $this->assertInstanceOf(
             Provide::class,
-            new Local(
-                $this->createMock(Processes::class),
-                Path::none(),
-            ),
+            new Local(InMemory::new()),
         );
     }
 
     public function testReturnExistingKey()
     {
         $provide = new Local(
-            $processes = $this->createMock(Processes::class),
-            Path::of('/somewhere'),
+            $adapter = InMemory::new(),
         );
-        $processes
-            ->expects($this->once())
-            ->method('execute')
-            ->with($this->callback(static function($command): bool {
-                return $command->toString() === "cat 'id_rsa.pub'" &&
-                    '/somewhere' === $command->workingDirectory()->match(
-                        static fn($directory) => $directory->toString(),
-                        static fn() => null,
-                    );
-            }))
-            ->willReturn($process = $this->createMock(Process::class));
-        $process
-            ->expects($this->once())
-            ->method('wait')
-            ->willReturn(Either::right(new SideEffect));
-        $process
-            ->expects($this->once())
-            ->method('output')
-            ->willReturn($output = $this->createMock(Output::class));
-        $output
-            ->expects($this->once())
-            ->method('toString')
-            ->willReturn('foo');
+        $adapter->add(File::named('id_rsa.pub', Content\Lines::ofContent('foo')));
 
         $keys = $provide();
 
@@ -75,25 +42,7 @@ class LocalTest extends TestCase
 
     public function testReturnNothingWhenNoLocalKey()
     {
-        $provide = new Local(
-            $processes = $this->createMock(Processes::class),
-            Path::of('/somewhere'),
-        );
-        $processes
-            ->expects($this->once())
-            ->method('execute')
-            ->with($this->callback(static function($command): bool {
-                return $command->toString() === "cat 'id_rsa.pub'" &&
-                    '/somewhere' === $command->workingDirectory()->match(
-                        static fn($directory) => $directory->toString(),
-                        static fn() => null,
-                    );
-            }))
-            ->willReturn($process = $this->createMock(Process::class));
-        $process
-            ->expects($this->once())
-            ->method('wait')
-            ->willReturn(Either::left(new Failed(new ExitCode(1))));
+        $provide = new Local(InMemory::new());
 
         $keys = $provide();
 

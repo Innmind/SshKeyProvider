@@ -3,38 +3,29 @@ declare(strict_types = 1);
 
 namespace Innmind\SshKeyProvider;
 
-use Innmind\Server\Control\Server\{
-    Processes,
-    Command,
+use Innmind\Filesystem\{
+    Adapter,
+    Name,
 };
-use Innmind\Url\Path;
 use Innmind\Immutable\Set;
 
 final class Local implements Provide
 {
-    private Processes $processes;
-    private Path $sshFolder;
+    private Adapter $adapter;
 
-    public function __construct(Processes $processes, Path $sshFolder)
+    public function __construct(Adapter $adapter)
     {
-        $this->processes = $processes;
-        $this->sshFolder = $sshFolder;
+        $this->adapter = $adapter;
     }
 
     public function __invoke(): Set
     {
-        $key = $this
-            ->processes
-            ->execute(
-                Command::foreground('cat')
-                    ->withArgument('id_rsa.pub')
-                    ->withWorkingDirectory($this->sshFolder),
-            );
-
-        return $key
-            ->wait()
+        return $this
+            ->adapter
+            ->get(Name::of('id_rsa.pub'))
+            ->map(static fn($key) => $key->content()->toString())
             ->match(
-                static fn() => Set::of(new PublicKey($key->output()->toString())),
+                static fn($key) => Set::of(new PublicKey($key)),
                 static fn() => Set::of(),
             );
     }
