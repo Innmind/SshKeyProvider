@@ -22,13 +22,13 @@ class LocalTest extends TestCase
     {
         $this->assertInstanceOf(
             Provide::class,
-            new Local(InMemory::new()),
+            Local::of(InMemory::new()),
         );
     }
 
     public function testReturnExistingKey()
     {
-        $provide = new Local(
+        $provide = Local::of(
             $adapter = InMemory::new(),
         );
         $adapter->add(File::named('id_rsa.pub', Content\Lines::ofContent('foo')));
@@ -42,7 +42,7 @@ class LocalTest extends TestCase
 
     public function testReturnNothingWhenNoLocalKey()
     {
-        $provide = new Local(InMemory::new());
+        $provide = Local::of(InMemory::new());
 
         $keys = $provide();
 

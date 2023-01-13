@@ -36,7 +36,7 @@ class GithubTest extends TestCase
     {
         $this->assertInstanceOf(
             Provide::class,
-            new Github(
+            Github::of(
                 $this->createMock(Transport::class),
                 'foo',
             ),
@@ -47,7 +47,7 @@ class GithubTest extends TestCase
     {
         $this->expectException(\DomainException::class);
 
-        new Github(
+        Github::of(
             $this->createMock(Transport::class),
             '',
         );
@@ -58,7 +58,7 @@ class GithubTest extends TestCase
         $this
             ->forAll(DataSet\Strings::madeOf(DataSet\Chars::alphanumerical())->between(1, 50))
             ->then(function(string $user): void {
-                $provide = new Github(
+                $provide = Github::of(
                     $http = $this->createMock(Transport::class),
                     $user,
                 );

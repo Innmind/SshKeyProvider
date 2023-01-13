@@ -13,7 +13,7 @@ final class Merge implements Provide
     /**
      * @no-named-arguments
      */
-    public function __construct(Provide ...$providers)
+    private function __construct(Provide ...$providers)
     {
         $this->providers = $providers;
     }
@@ -31,5 +31,13 @@ final class Merge implements Provide
         return $keys
             ->map(static fn($key) => $key->toString()) // key de-duplication
             ->map(PublicKey::of(...));
+    }
+
+    /**
+     * @no-named-arguments
+     */
+    public static function of(Provide ...$providers): self
+    {
+        return new self(...$providers);
     }
 }

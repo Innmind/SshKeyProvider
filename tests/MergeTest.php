@@ -17,13 +17,13 @@ class MergeTest extends TestCase
     {
         $this->assertInstanceOf(
             Provide::class,
-            new Merge,
+            Merge::of(),
         );
     }
 
     public function testMerge()
     {
-        $provide = new Merge(
+        $provide = Merge::of(
             $provider1 = $this->createMock(Provide::class),
             $provider2 = $this->createMock(Provide::class),
         );

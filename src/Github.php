@@ -3,6 +3,7 @@ declare(strict_types = 1);
 
 namespace Innmind\SshKeyProvider;
 
+use Innmind\SshKeyProvider\Exception\DomainException;
 use Innmind\HttpTransport\Transport;
 use Innmind\Http\{
     Message\Request\Request,
@@ -21,10 +22,10 @@ final class Github implements Provide
     private Transport $fulfill;
     private string $name;
 
-    public function __construct(Transport $fulfill, string $name)
+    private function __construct(Transport $fulfill, string $name)
     {
         if (Str::of($name)->empty()) {
-            throw new \DomainException;
+            throw new DomainException;
         }
 
         $this->fulfill = $fulfill;
@@ -55,5 +56,13 @@ final class Github implements Provide
                 static fn($keys) => Set::of(...$keys->toList()),
                 static fn() => Set::of(),
             );
+    }
+
+    /**
+     * @throws DomainException When the name is empty
+     */
+    public static function of(Transport $fulfill, string $name): self
+    {
+        return new self($fulfill, $name);
     }
 }

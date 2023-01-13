@@ -17,7 +17,7 @@ class CacheTest extends TestCase
     {
         $this->assertInstanceOf(
             Provide::class,
-            new Cache(
+            Cache::of(
                 $this->createMock(Provide::class),
             ),
         );
@@ -25,7 +25,7 @@ class CacheTest extends TestCase
 
     public function testCache()
     {
-        $provide = new Cache(
+        $provide = Cache::of(
             $provider = $this->createMock(Provide::class),
         );
         $provider

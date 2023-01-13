@@ -13,7 +13,7 @@ final class Local implements Provide
 {
     private Adapter $adapter;
 
-    public function __construct(Adapter $adapter)
+    private function __construct(Adapter $adapter)
     {
         $this->adapter = $adapter;
     }
@@ -29,5 +29,10 @@ final class Local implements Provide
                 static fn($key) => Set::of($key),
                 static fn() => Set::of(),
             );
+    }
+
+    public static function of(Adapter $adapter): self
+    {
+        return new self($adapter);
     }
 }
