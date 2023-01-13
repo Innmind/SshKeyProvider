@@ -6,6 +6,9 @@ namespace Innmind\SshKeyProvider;
 use Innmind\SshKeyProvider\Exception\DomainException;
 use Innmind\Immutable\Str;
 
+/**
+ * @psalm-immutable
+ */
 final class PublicKey
 {
     private string $value;
