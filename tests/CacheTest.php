@@ -32,7 +32,7 @@ class CacheTest extends TestCase
             ->expects($this->once())
             ->method('__invoke')
             ->willReturn(Set::of(
-                $bar = new PublicKey('bar'),
+                $bar = PublicKey::of('bar'),
             ));
 
         $keys = $provide();

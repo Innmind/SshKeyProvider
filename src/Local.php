@@ -24,8 +24,9 @@ final class Local implements Provide
             ->adapter
             ->get(Name::of('id_rsa.pub'))
             ->map(static fn($key) => $key->content()->toString())
+            ->flatMap(PublicKey::maybe(...))
             ->match(
-                static fn($key) => Set::of(new PublicKey($key)),
+                static fn($key) => Set::of($key),
                 static fn() => Set::of(),
             );
     }

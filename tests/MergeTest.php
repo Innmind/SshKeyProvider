@@ -31,15 +31,15 @@ class MergeTest extends TestCase
             ->expects($this->once())
             ->method('__invoke')
             ->willReturn(Set::of(
-                new PublicKey('foo'),
-                $baz = new PublicKey('baz'),
+                PublicKey::of('foo'),
+                $baz = PublicKey::of('baz'),
             ));
         $provider2
             ->expects($this->once())
             ->method('__invoke')
             ->willReturn(Set::of(
-                $foo = new PublicKey('foo'),
-                $bar = new PublicKey('bar'),
+                $foo = PublicKey::of('foo'),
+                $bar = PublicKey::of('bar'),
             ));
 
         $keys = $provide();

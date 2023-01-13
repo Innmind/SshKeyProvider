@@ -30,6 +30,6 @@ final class Merge implements Provide
         /** @var Set<PublicKey> */
         return $keys
             ->map(static fn($key) => $key->toString()) // key de-duplication
-            ->map(static fn($key) => new PublicKey($key));
+            ->map(PublicKey::of(...));
     }
 }

@@ -13,6 +13,7 @@ use Innmind\Url\Url;
 use Innmind\Immutable\{
     Set,
     Str,
+    Sequence,
 };
 
 final class Github implements Provide
@@ -32,6 +33,7 @@ final class Github implements Provide
 
     public function __invoke(): Set
     {
+        /** @psalm-suppress InvalidArgument Due to the empty sequence */
         return ($this->fulfill)(new Request(
             Url::of("https://github.com/{$this->name}.keys"),
             Method::get,
@@ -43,7 +45,11 @@ final class Github implements Provide
                     ->body()
                     ->lines()
                     ->filter(static fn($line) => !$line->str()->empty())
-                    ->map(static fn($line) => new PublicKey($line->toString())),
+                    ->map(static fn($line) => $line->toString())
+                    ->flatMap(static fn($line) => PublicKey::maybe($line)->match(
+                        static fn($key) => Sequence::of($key),
+                        static fn() => Sequence::of(),
+                    )),
             )
             ->match(
                 static fn($keys) => Set::of(...$keys->toList()),
