@@ -11,7 +11,7 @@ final class Cache implements Provide
     /** @var Set<PublicKey> */
     private ?Set $keys = null;
 
-    public function __construct(Provide $provide)
+    private function __construct(Provide $provide)
     {
         $this->provide = $provide;
     }
@@ -19,5 +19,10 @@ final class Cache implements Provide
     public function __invoke(): Set
     {
         return $this->keys ??= ($this->provide)();
+    }
+
+    public static function of(Provide $provide): self
+    {
+        return new self($provide);
     }
 }

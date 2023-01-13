@@ -3,10 +3,7 @@ declare(strict_types = 1);
 
 namespace Tests\Innmind\SshKeyProvider;
 
-use Innmind\SshKeyProvider\{
-    PublicKey,
-    Exception\DomainException,
-};
+use Innmind\SshKeyProvider\PublicKey;
 use PHPUnit\Framework\TestCase;
 use Innmind\BlackBox\{
     PHPUnit\BlackBox,
@@ -21,8 +18,12 @@ class PublicKeyTest extends TestCase
     {
         $this
             ->forAll(Set\Unicode::lengthBetween(1, 100))
+            ->filter(static fn($value) => $value !== "\n")
             ->then(function(string $value): void {
-                $this->assertSame($value, (new PublicKey($value))->toString());
+                $this->assertSame($value, PublicKey::maybe($value)->match(
+                    static fn($key) => $key->toString(),
+                    static fn() => null,
+                ));
             });
     }
 
@@ -30,15 +31,20 @@ class PublicKeyTest extends TestCase
     {
         $this
             ->forAll(Set\Unicode::lengthBetween(1, 128))
+            ->filter(static fn($value) => $value !== "\n")
             ->then(function(string $value): void {
-                $this->assertSame($value, (new PublicKey("\n".$value."\n"))->toString());
+                $this->assertSame($value, PublicKey::maybe("\n".$value."\n")->match(
+                    static fn($key) => $key->toString(),
+                    static fn() => null,
+                ));
             });
     }
 
-    public function testThrowWhenEmptyString()
+    public function testReturnNothingWhenEmptyString()
     {
-        $this->expectException(DomainException::class);
-
-        new PublicKey(' ');
+        $this->assertNull(PublicKey::maybe(' ')->match(
+            static fn($key) => $key,
+            static fn() => null,
+        ));
     }
 }
