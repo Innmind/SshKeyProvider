@@ -8,15 +8,12 @@ use Innmind\SshKeyProvider\{
     Provide,
     PublicKey,
 };
-use Innmind\Server\Control\Server\{
-    Processes,
-    Process,
-    Process\ExitCode,
-    Process\Output,
+use Innmind\Filesystem\{
+    Adapter\InMemory,
+    File\File,
+    File\Content,
 };
-use Innmind\Url\Path;
 use Innmind\Immutable\Set;
-use function Innmind\Immutable\first;
 use PHPUnit\Framework\TestCase;
 
 class LocalTest extends TestCase
@@ -25,112 +22,31 @@ class LocalTest extends TestCase
     {
         $this->assertInstanceOf(
             Provide::class,
-            new Local(
-                $this->createMock(Processes::class),
-                Path::none(),
-            ),
+            Local::of(InMemory::new()),
         );
     }
 
     public function testReturnExistingKey()
     {
-        $provide = new Local(
-            $processes = $this->createMock(Processes::class),
-            Path::of('/somewhere')
+        $provide = Local::of(
+            $adapter = InMemory::new(),
         );
-        $processes
-            ->expects($this->once())
-            ->method('execute')
-            ->with($this->callback(static function($command): bool {
-                return $command->toString() === "cat 'id_rsa.pub'" &&
-                    $command->workingDirectory()->toString() === '/somewhere';
-            }))
-            ->willReturn($process = $this->createMock(Process::class));
-        $process
-            ->expects($this->once())
-            ->method('wait');
-        $process
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
-        $process
-            ->expects($this->once())
-            ->method('output')
-            ->willReturn($output = $this->createMock(Output::class));
-        $output
-            ->expects($this->once())
-            ->method('toString')
-            ->willReturn('foo');
+        $adapter->add(File::named('id_rsa.pub', Content\Lines::ofContent('foo')));
 
         $keys = $provide();
 
         $this->assertInstanceOf(Set::class, $keys);
-        $this->assertSame(PublicKey::class, (string) $keys->type());
         $this->assertCount(1, $keys);
-        $this->assertSame('foo', first($keys)->toString());
+        $this->assertSame('foo', $keys->toList()[0]->toString());
     }
 
-    public function testGenerateNewKey()
+    public function testReturnNothingWhenNoLocalKey()
     {
-        $provide = new Local(
-            $processes = $this->createMock(Processes::class),
-            Path::of('/somewhere')
-        );
-        $processes
-            ->expects($this->exactly(3))
-            ->method('execute')
-            ->withConsecutive(
-                [$this->callback(static function($command): bool {
-                    return $command->toString() === "cat 'id_rsa.pub'" &&
-                        $command->workingDirectory()->toString() === '/somewhere';
-                })],
-                [$this->callback(static function($command): bool {
-                    return $command->toString() === "ssh-keygen '-t' 'rsa' '-f' 'id_rsa' '-N' ''" &&
-                        $command->workingDirectory()->toString() === '/somewhere';
-                })],
-                [$this->callback(static function($command): bool {
-                    return $command->toString() === "cat 'id_rsa.pub'" &&
-                        $command->workingDirectory()->toString() === '/somewhere';
-                })],
-            )
-            ->will($this->onConsecutiveCalls(
-                $process1 = $this->createMock(Process::class),
-                $process2 = $this->createMock(Process::class),
-                $process3 = $this->createMock(Process::class),
-            ));
-        $process1
-            ->expects($this->once())
-            ->method('wait');
-        $process1
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(1));
-        $process2
-            ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
-        $process3
-            ->expects($this->once())
-            ->method('wait')
-            ->will($this->returnSelf());
-        $process3
-            ->expects($this->once())
-            ->method('exitCode')
-            ->willReturn(new ExitCode(0));
-        $process3
-            ->expects($this->once())
-            ->method('output')
-            ->willReturn($output = $this->createMock(Output::class));
-        $output
-            ->expects($this->once())
-            ->method('toString')
-            ->willReturn('foo');
+        $provide = Local::of(InMemory::new());
 
         $keys = $provide();
 
         $this->assertInstanceOf(Set::class, $keys);
-        $this->assertSame(PublicKey::class, (string) $keys->type());
-        $this->assertCount(1, $keys);
-        $this->assertSame('foo', first($keys)->toString());
+        $this->assertCount(0, $keys);
     }
 }

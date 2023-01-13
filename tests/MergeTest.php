@@ -9,7 +9,6 @@ use Innmind\SshKeyProvider\{
     PublicKey,
 };
 use Innmind\Immutable\Set;
-use function Innmind\Immutable\unwrap;
 use PHPUnit\Framework\TestCase;
 
 class MergeTest extends TestCase
@@ -18,37 +17,34 @@ class MergeTest extends TestCase
     {
         $this->assertInstanceOf(
             Provide::class,
-            new Merge
+            Merge::of(),
         );
     }
 
     public function testMerge()
     {
-        $provide = new Merge(
+        $provide = Merge::of(
             $provider1 = $this->createMock(Provide::class),
-            $provider2 = $this->createMock(Provide::class)
+            $provider2 = $this->createMock(Provide::class),
         );
         $provider1
             ->expects($this->once())
             ->method('__invoke')
             ->willReturn(Set::of(
-                PublicKey::class,
-                new PublicKey('foo'),
-                $baz = new PublicKey('baz')
+                PublicKey::of('foo'),
+                $baz = PublicKey::of('baz'),
             ));
         $provider2
             ->expects($this->once())
             ->method('__invoke')
             ->willReturn(Set::of(
-                PublicKey::class,
-                $foo = new PublicKey('foo'),
-                $bar = new PublicKey('bar')
+                $foo = PublicKey::of('foo'),
+                $bar = PublicKey::of('bar'),
             ));
 
         $keys = $provide();
 
         $this->assertInstanceOf(Set::class, $keys);
-        $this->assertSame(PublicKey::class, (string) $keys->type());
-        $this->assertSame([$foo, $baz, $bar], unwrap($keys));
+        $this->assertEquals([$foo, $baz, $bar], $keys->toList());
     }
 }

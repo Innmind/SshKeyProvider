@@ -4,21 +4,47 @@ declare(strict_types = 1);
 namespace Innmind\SshKeyProvider;
 
 use Innmind\SshKeyProvider\Exception\DomainException;
-use Innmind\Immutable\Str;
+use Innmind\Immutable\{
+    Str,
+    Maybe,
+};
 
+/**
+ * @psalm-immutable
+ */
 final class PublicKey
 {
     private string $value;
 
-    public function __construct(string $value)
+    private function __construct(string $value)
     {
-        $value = Str::of($value)->trim();
+        $this->value = $value;
+    }
 
-        if ($value->empty()) {
-            throw new DomainException;
-        }
+    /**
+     * @psalm-pure
+     *
+     * @throws DomainException
+     */
+    public static function of(string $value): self
+    {
+        return self::maybe($value)->match(
+            static fn($self) => $self,
+            static fn() => throw new DomainException($value),
+        );
+    }
 
-        $this->value = $value->toString();
+    /**
+     * @psalm-pure
+     *
+     * @return Maybe<self>
+     */
+    public static function maybe(string $value): Maybe
+    {
+        return Maybe::just(Str::of($value))
+            ->map(static fn($key) => $key->trim())
+            ->filter(static fn($key) => !$key->empty())
+            ->map(static fn($key) => new self($key->toString()));
     }
 
     public function toString(): string
