@@ -20,7 +20,7 @@ class PublicKeyTest extends TestCase
             ->forAll(Set\Strings::madeOf(Set\Unicode::any())->between(1, 100))
             ->filter(static fn($value) => $value !== "\n")
             ->then(function(string $value): void {
-                $this->assertSame($value, PublicKey::maybe($value)->match(
+                $this->assertSame(\trim($value), PublicKey::maybe($value)->match(
                     static fn($key) => $key->toString(),
                     static fn() => null,
                 ));
