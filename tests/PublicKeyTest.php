@@ -17,7 +17,7 @@ class PublicKeyTest extends TestCase
     public function testInterface()
     {
         $this
-            ->forAll(Set\Unicode::lengthBetween(1, 100))
+            ->forAll(Set\Strings::madeOf(Set\Unicode::any())->between(1, 100))
             ->filter(static fn($value) => $value !== "\n")
             ->then(function(string $value): void {
                 $this->assertSame($value, PublicKey::maybe($value)->match(
@@ -30,7 +30,7 @@ class PublicKeyTest extends TestCase
     public function testTrim()
     {
         $this
-            ->forAll(Set\Unicode::lengthBetween(1, 128))
+            ->forAll(Set\Strings::madeOf(Set\Unicode::any())->between(1, 128))
             ->filter(static fn($value) => $value !== "\n")
             ->then(function(string $value): void {
                 $this->assertSame($value, PublicKey::maybe("\n".$value."\n")->match(
