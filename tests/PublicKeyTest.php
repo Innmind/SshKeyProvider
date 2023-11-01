@@ -31,7 +31,7 @@ class PublicKeyTest extends TestCase
     {
         $this
             ->forAll(Set\Strings::madeOf(Set\Unicode::any())->between(1, 128))
-            ->filter(static fn($value) => $value !== "\n")
+            ->filter(static fn($value) => !\str_contains($value, "\n"))
             ->then(function(string $value): void {
                 $this->assertSame($value, PublicKey::maybe("\n".$value."\n")->match(
                     static fn($key) => $key->toString(),
