@@ -10,7 +10,7 @@ use Innmind\SshKeyProvider\{
 };
 use Innmind\Filesystem\{
     Adapter\InMemory,
-    File\File,
+    File,
     File\Content,
 };
 use Innmind\Immutable\Set;
@@ -31,7 +31,7 @@ class LocalTest extends TestCase
         $provide = Local::of(
             $adapter = InMemory::new(),
         );
-        $adapter->add(File::named('id_rsa.pub', Content\Lines::ofContent('foo')));
+        $adapter->add(File::named('id_rsa.pub', Content::ofString('foo')));
 
         $keys = $provide();
 

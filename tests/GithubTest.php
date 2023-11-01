@@ -12,10 +12,11 @@ use Innmind\HttpTransport\{
     Transport,
     Success,
 };
-use Innmind\Http\Message\{
+use Innmind\Http\{
     Response,
     Request,
-    StatusCode,
+    Response\StatusCode,
+    ProtocolVersion,
 };
 use Innmind\Filesystem\File\Content;
 use Innmind\Immutable\{
@@ -62,11 +63,16 @@ class GithubTest extends TestCase
                     $http = $this->createMock(Transport::class),
                     $user,
                 );
-                $response = $this->createMock(Response::class);
-                $response
-                    ->expects($this->once())
-                    ->method('statusCode')
-                    ->willReturn(StatusCode::ok);
+                $response = Response::of(
+                    StatusCode::ok,
+                    ProtocolVersion::v11,
+                    null,
+                    Content::ofString(<<<KEYS
+                    foo
+                    bar
+
+                    KEYS),
+                );
                 $http
                     ->expects($this->once())
                     ->method('__invoke')
@@ -74,18 +80,10 @@ class GithubTest extends TestCase
                         return $request->url()->toString() === "https://github.com/$user.keys" &&
                             $request->method()->toString() === 'GET';
                     }))
-                    ->willReturn(Either::right(new Success(
-                        $this->createMock(Request::class),
+                    ->will($this->returnCallback(static fn($request) => Either::right(new Success(
+                        $request,
                         $response,
-                    )));
-                $response
-                    ->expects($this->once())
-                    ->method('body')
-                    ->willReturn(Content\Lines::ofContent(<<<KEYS
-                    foo
-                    bar
-
-                    KEYS));
+                    ))));
 
                 $keys = $provide();
 
