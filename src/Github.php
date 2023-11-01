@@ -6,8 +6,8 @@ namespace Innmind\SshKeyProvider;
 use Innmind\SshKeyProvider\Exception\DomainException;
 use Innmind\HttpTransport\Transport;
 use Innmind\Http\{
-    Message\Request\Request,
-    Message\Method,
+    Request,
+    Method,
     ProtocolVersion,
 };
 use Innmind\Url\Url;
@@ -35,7 +35,7 @@ final class Github implements Provide
     public function __invoke(): Set
     {
         /** @psalm-suppress InvalidArgument Due to the empty sequence */
-        return ($this->fulfill)(new Request(
+        return ($this->fulfill)(Request::of(
             Url::of("https://github.com/{$this->name}.keys"),
             Method::get,
             ProtocolVersion::v20,

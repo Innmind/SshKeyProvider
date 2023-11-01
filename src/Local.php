@@ -5,9 +5,13 @@ namespace Innmind\SshKeyProvider;
 
 use Innmind\Filesystem\{
     Adapter,
+    File,
     Name,
 };
-use Innmind\Immutable\Set;
+use Innmind\Immutable\{
+    Set,
+    Predicate\Instance,
+};
 
 final class Local implements Provide
 {
@@ -23,6 +27,7 @@ final class Local implements Provide
         return $this
             ->adapter
             ->get(Name::of('id_rsa.pub'))
+            ->keep(Instance::of(File::class))
             ->map(static fn($key) => $key->content()->toString())
             ->flatMap(PublicKey::maybe(...))
             ->match(
